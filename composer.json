@@ -1,0 +1,27 @@
+{
+    "name": "martin3r/platform-clients-for-life",
+    "description": "Clients For Life (Vorlagen und Instanzen pro Kunde)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Platform Team",
+            "email": "team@platform.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Platform\\ClientsForLife\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Platform\\ClientsForLife\\ClientsForLifeServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
