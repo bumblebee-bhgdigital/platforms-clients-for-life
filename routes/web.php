@@ -19,6 +19,8 @@
  */
 
 use Platform\ClientsForLife\Livewire\Dashboard;
+use Platform\ClientsForLife\Livewire\Show;
+use Platform\ClientsForLife\Livewire\Templates;
 use Platform\ClientsForLife\Livewire\Showcase;
 
 /**
@@ -27,6 +29,14 @@ use Platform\ClientsForLife\Livewire\Showcase;
  * Hauptübersicht des Moduls
  */
 Route::get('/', Dashboard::class)->name('clients-for-life.dashboard');
+
+// Übersicht aller Instanzen (Alias auf dieselbe Komponente) und Detailseite.
+// {clientsForLife} = Route-Model-Binding auf die ID (wie {plannerProject} im Planner).
+Route::get('/clients', Dashboard::class)->name('clients-for-life.clients.index');
+Route::get('/clients/{clientsForLife}', Show::class)->name('clients-for-life.clients.show');
+
+// Vorlagen (eigener Navigationsbereich)
+Route::get('/templates', Templates::class)->name('clients-for-life.templates.index');
 
 /**
  * nx-Showcase Route

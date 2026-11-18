@@ -23,6 +23,8 @@
 
 namespace Platform\ClientsForLife;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -193,6 +195,12 @@ class ClientsForLifeServiceProvider extends ServiceProvider
          * <livewire:clients-for-life.dashboard />
          */
         $this->registerLivewireComponents();
+
+        // Morph-Alias, Policies, Organization-Bridge (EntityLinkProvider + Link-Hook), Tools
+        $this->registerMorphMap();
+        $this->registerPolicies();
+        $this->registerEntityLinkProvider();
+        $this->registerTools();
         
         /**
          * SCHRITT 7: Tools registrieren (optional)
@@ -201,6 +209,98 @@ class ClientsForLifeServiceProvider extends ServiceProvider
          * 
          * $this->registerTools();
          */
+    }
+
+    /**
+     * Morph-Alias 'clients_for_life' (wie 'project' im Planner) — Voraussetzung für DimensionLinks,
+     * HasEntityLinks::getMorphClass() und die Auflösung in der Organization.
+     */
+    protected function registerMorphMap(): void
+    {
+        Relation::morphMap([
+            \Platform\ClientsForLife\Models\ClientsForLife::MORPH_ALIAS => \Platform\ClientsForLife\Models\ClientsForLife::class,
+        ]);
+    }
+
+    protected function registerPolicies(): void
+    {
+        Gate::policy(
+            \Platform\ClientsForLife\Models\ClientsForLife::class,
+            \Platform\ClientsForLife\Policies\ClientsForLifePolicy::class
+        );
+        Gate::policy(
+            \Platform\ClientsForLife\Models\ClientsForLifeTemplate::class,
+            \Platform\ClientsForLife\Policies\ClientsForLifeTemplatePolicy::class
+        );
+    }
+
+    /**
+     * EntityLinkProvider registrieren (lose Kopplung mit dem Organization-Modul, wie PlannerServiceProvider)
+     * und das Link-Event an externe Verknüpfungen koppeln.
+     */
+    protected function registerEntityLinkProvider(): void
+    {
+        try {
+            resolve(\Platform\Organization\Services\EntityLinkRegistry::class)
+                ->register(new \Platform\ClientsForLife\Organization\ClientsForLifeEntityLinkProvider());
+        } catch (\Throwable $e) {
+            // Organization-Modul nicht geladen
+        }
+
+        // Verknüpfungen entstehen nicht nur über den ClientsForLifeService, sondern auch extern
+        // (organization.entity.link.POST, Terminal-App "Verknüpfungen"). Der Hook sorgt dafür, dass
+        // das Event dispatched und der Bridge-Cache geleert wird — egal, woher die Verknüpfung kommt.
+        if (class_exists(\Platform\Organization\Models\OrganizationDimensionLink::class)) {
+            \Platform\Organization\Models\OrganizationDimensionLink::created(function ($link) {
+                $this->onDimensionLinkChanged($link, \Platform\ClientsForLife\Events\ClientsForLifeLinkChanged::LINKED);
+            });
+            \Platform\Organization\Models\OrganizationDimensionLink::deleted(function ($link) {
+                $this->onDimensionLinkChanged($link, \Platform\ClientsForLife\Events\ClientsForLifeLinkChanged::UNLINKED);
+            });
+        }
+    }
+
+    protected function onDimensionLinkChanged($link, string $action): void
+    {
+        if ($link->linkable_type !== \Platform\ClientsForLife\Models\ClientsForLife::MORPH_ALIAS) {
+            return;
+        }
+
+        try {
+            $client = \Platform\ClientsForLife\Models\ClientsForLife::withTrashed()->find($link->linkable_id);
+            if (! $client) {
+                return;
+            }
+            \Platform\Organization\Services\EntityDimensionBridge::flush();
+            \Platform\ClientsForLife\Events\ClientsForLifeLinkChanged::dispatch($client, $action, $link->entity_id ? (int) $link->entity_id : null);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ClientsForLife: DimensionLink-Hook fehlgeschlagen', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Tools für AI/Chat registrieren (Namen nach Plattform-Konvention: <modul>.<ressource-plural>.<VERB>,
+     * z. B. planner.projects.GET).
+     */
+    protected function registerTools(): void
+    {
+        try {
+            $registry = resolve(\Platform\Core\Tools\ToolRegistry::class);
+            foreach ([
+                \Platform\ClientsForLife\Tools\ListClientsForLifeTool::class,
+                \Platform\ClientsForLife\Tools\CreateClientsForLifeTool::class,
+                \Platform\ClientsForLife\Tools\UpdateClientsForLifeTool::class,
+                \Platform\ClientsForLife\Tools\DeleteClientsForLifeTool::class,
+                \Platform\ClientsForLife\Tools\ListClientsForLifeTemplatesTool::class,
+                \Platform\ClientsForLife\Tools\CreateClientsForLifeTemplateTool::class,
+                \Platform\ClientsForLife\Tools\UpdateClientsForLifeTemplateTool::class,
+                \Platform\ClientsForLife\Tools\DeleteClientsForLifeTemplateTool::class,
+            ] as $tool) {
+                $registry->register(new $tool());
+            }
+        } catch (\Throwable $e) {
+            // ToolRegistry nicht verfügbar
+        }
     }
 
     /**
