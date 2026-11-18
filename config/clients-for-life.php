@@ -42,7 +42,7 @@ return [
      */
     'navigation' => [
         'route' => 'clients-for-life.dashboard',
-        'icon'  => 'heroicon-o-cube',
+        'icon'  => 'heroicon-o-heart',
         'order' => 100, // Hohe Zahl = weiter unten in der Navigation
     ],
 
@@ -68,12 +68,17 @@ return [
      */
     'sidebar' => [
         [
-            'group' => 'Allgemein',
+            'group' => 'Clients for Life',
             'items' => [
                 [
-                    'label' => 'Dashboard',
+                    'label' => 'Übersicht',
                     'route' => 'clients-for-life.dashboard',
-                    'icon'  => 'heroicon-o-home',
+                    'icon'  => 'heroicon-o-heart',
+                ],
+                [
+                    'label' => 'Vorlagen',
+                    'route' => 'clients-for-life.templates.index',
+                    'icon'  => 'heroicon-o-document-duplicate',
                 ],
                 [
                     'label' => 'nx-Showcase',
