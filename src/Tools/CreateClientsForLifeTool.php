@@ -18,7 +18,7 @@ class CreateClientsForLifeTool implements ToolContract, ToolMetadataContract
 
     public function getName(): string
     {
-        return 'clients_for_life.POST';
+        return 'clients-for-life.clients.POST';
     }
 
     public function getDescription(): string
@@ -34,7 +34,7 @@ class CreateClientsForLifeTool implements ToolContract, ToolMetadataContract
             'properties' => array_merge($this->clientFieldSchema(), [
                 'team_id' => ['type' => 'integer', 'description' => 'Optional: Team-ID (Default: aktuelles Team).'],
                 'entity_id' => ['type' => 'integer', 'description' => 'Optional: Kunden-Knoten (Organisations-Entity). Nutze "organization.entities.GET".'],
-                'template_id' => ['type' => 'integer', 'description' => 'Optional: Vorlage (clients_for_life_templates.GET).'],
+                'template_id' => ['type' => 'integer', 'description' => 'Optional: Vorlage (clients-for-life.templates.GET).'],
                 'status' => ['type' => 'string', 'enum' => ['draft', 'active'], 'description' => 'Optional: draft oder active (Default).'],
             ]),
             'required' => ['title'],

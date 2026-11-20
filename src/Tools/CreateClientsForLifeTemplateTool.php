@@ -18,7 +18,7 @@ class CreateClientsForLifeTemplateTool implements ToolContract, ToolMetadataCont
 
     public function getName(): string
     {
-        return 'clients_for_life_templates.POST';
+        return 'clients-for-life.templates.POST';
     }
 
     public function getDescription(): string

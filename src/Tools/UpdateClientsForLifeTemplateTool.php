@@ -17,7 +17,7 @@ class UpdateClientsForLifeTemplateTool implements ToolContract, ToolMetadataCont
 
     public function getName(): string
     {
-        return 'clients_for_life_templates.PUT';
+        return 'clients-for-life.templates.PUT';
     }
 
     public function getDescription(): string

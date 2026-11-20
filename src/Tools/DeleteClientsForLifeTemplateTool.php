@@ -16,7 +16,7 @@ class DeleteClientsForLifeTemplateTool implements ToolContract, ToolMetadataCont
 
     public function getName(): string
     {
-        return 'clients_for_life_templates.DELETE';
+        return 'clients-for-life.templates.DELETE';
     }
 
     public function getDescription(): string

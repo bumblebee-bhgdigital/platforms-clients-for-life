@@ -16,13 +16,13 @@ class DeleteClientsForLifeTool implements ToolContract, ToolMetadataContract
 
     public function getName(): string
     {
-        return 'clients_for_life.DELETE';
+        return 'clients-for-life.clients.DELETE';
     }
 
     public function getDescription(): string
     {
         return 'DELETE /clients-for-life/{id} - Löscht eine Clients-for-Life-Instanz (Soft-Delete, wiederherstellbar). Pflicht: id. '
-            . 'Zum Beenden einer Kundenbeziehung ohne Löschen stattdessen clients_for_life.PUT mit status=archived nutzen (Historie bleibt sichtbar).';
+            . 'Zum Beenden einer Kundenbeziehung ohne Löschen stattdessen clients-for-life.clients.PUT mit status=archived nutzen (Historie bleibt sichtbar).';
     }
 
     public function getSchema(): array
