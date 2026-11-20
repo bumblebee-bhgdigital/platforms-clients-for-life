@@ -15,7 +15,7 @@ class ListClientsForLifeTemplatesTool implements ToolContract, ToolMetadataContr
 
     public function getName(): string
     {
-        return 'clients_for_life_templates.GET';
+        return 'clients-for-life.templates.GET';
     }
 
     public function getDescription(): string

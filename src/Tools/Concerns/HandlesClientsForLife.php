@@ -11,7 +11,7 @@ use Platform\Core\Contracts\ToolResult;
 use Platform\Core\Models\Team;
 use Platform\Organization\Models\OrganizationEntity;
 
-/** Gemeinsame Helfer der clients_for_life.*-Tools (Team-Auflösung, Serialisierung, Knoten-Schreibrecht). */
+/** Gemeinsame Helfer der clients-for-life.clients.*-Tools (Team-Auflösung, Serialisierung, Knoten-Schreibrecht). */
 trait HandlesClientsForLife
 {
     /** @return array{team: Team|null, error: ToolResult|null} */

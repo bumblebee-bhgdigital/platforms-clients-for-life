@@ -18,7 +18,7 @@ class UpdateClientsForLifeTool implements ToolContract, ToolMetadataContract
 
     public function getName(): string
     {
-        return 'clients_for_life.PUT';
+        return 'clients-for-life.clients.PUT';
     }
 
     public function getDescription(): string
